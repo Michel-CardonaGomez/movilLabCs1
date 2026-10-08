@@ -1,0 +1,22 @@
+// Colores tomados del diseño de Figma (index.css)
+export const colors = {
+  bg: '#05060a',
+  header: '#08090e',
+  text: '#ffffff',
+  textMuted: 'rgba(255,255,255,0.45)',
+  textFaint: 'rgba(255,255,255,0.28)',
+  panel: 'rgba(255,255,255,0.035)',
+  border: 'rgba(255,255,255,0.085)',
+  gold: '#c3a35f',
+  goldLight: '#d1b36d',
+  goldPale: '#eadcae',
+  goldBorder: 'rgba(209,179,109,0.24)',
+  goldBg: 'rgba(195,163,95,0.09)',
+  wine: '#934157',
+  wineLight: '#c9788b',
+  wineBar: '#a75165',
+  wineBg: 'rgba(125,38,58,0.12)',
+  wineBorder: 'rgba(147,65,87,0.28)',
+  green: '#34d399',
+  canvas: '#000000',
+};
