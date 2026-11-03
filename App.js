@@ -6,6 +6,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { predict } from './src/api';
 import DrawPad from './src/DrawPad';
+import Esp32CameraScreen from './src/screens/Esp32CameraScreen';
 import { colors } from './src/theme';
 
 const MODES = [
@@ -15,6 +16,7 @@ const MODES = [
 ];
 
 export default function App() {
+  const [tab, setTab] = useState('classifier'); // 'classifier' | 'esp32'
   const [model, setModel] = useState('pets'); // 'pets' | 'digits'
   const [mode, setMode] = useState('upload');
   const [uploadUri, setUploadUri] = useState(null);
@@ -115,8 +117,16 @@ export default function App() {
       <StatusBar barStyle="light-content" />
       <View style={s.header}>
         <Text style={s.brand}>CSLab</Text>
+        <View style={s.tabs}>
+          {[['classifier', 'Clasificador'], ['esp32', 'Cámara ESP32']].map(([id, label]) => (
+            <TouchableOpacity key={id} style={[s.tab, tab === id && s.tabActive]} onPress={() => { setLive(false); setTab(id); }}>
+              <Text style={[s.tabText, tab === id && { color: colors.goldPale }]}>{label}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
       </View>
 
+      {tab === 'esp32' ? <Esp32CameraScreen /> : (
       <ScrollView contentContainerStyle={s.content} scrollEnabled={scrollEnabled}>
         <Text style={s.title}>Explora modelos de</Text>
         <Text style={[s.title, { color: colors.goldLight }]}>Machine Learning</Text>
@@ -261,6 +271,7 @@ export default function App() {
           )}
         </View>
       </ScrollView>
+      )}
     </View>
   );
 }
@@ -283,6 +294,10 @@ const s = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.bg },
   header: { paddingTop: 52, paddingBottom: 14, paddingHorizontal: 20, backgroundColor: colors.header, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.07)' },
   brand: { color: '#fff', fontSize: 15, fontWeight: '600' },
+  tabs: { flexDirection: 'row', gap: 8, marginTop: 12 },
+  tab: { paddingVertical: 7, paddingHorizontal: 14, borderRadius: 20, borderWidth: 1, borderColor: 'transparent' },
+  tabActive: { backgroundColor: colors.goldBg, borderColor: 'rgba(195,163,95,0.18)' },
+  tabText: { color: colors.textFaint, fontSize: 13 },
   content: { padding: 20, paddingBottom: 48 },
   title: { color: '#fff', fontSize: 34, fontWeight: '600', lineHeight: 38, letterSpacing: -1 },
   subtitle: { color: colors.textMuted, fontSize: 14, lineHeight: 21, marginTop: 12, marginBottom: 20 },
