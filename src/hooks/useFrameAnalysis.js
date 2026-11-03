@@ -42,7 +42,7 @@ export function useFrameAnalysis({ getFrame, model, live, minIntervalMs = 1500 }
     abortRef.current = controller;
     const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
     try {
-      file.write(new Uint8Array(bytes));
+      await file.write(new Uint8Array(bytes)); // asíncrono desde SDK 58
       const r = await predict(model, file.uri, { signal: controller.signal });
       if (!mountedRef.current) return;
       if (r && typeof r === 'object') { setResult(r); setError(null); }
