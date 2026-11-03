@@ -5,7 +5,7 @@ const URLS = {
   digits: process.env.EXPO_PUBLIC_MNIST_URL,
 };
 
-export async function predict(model, uri) {
+export async function predict(model, uri, { signal } = {}) {
   const url = URLS[model];
   if (!url) throw new Error('Falta la URL de la API en el archivo .env');
 
@@ -14,7 +14,7 @@ export async function predict(model, uri) {
   const form = new FormData();
   form.append('image', new File(uri));
 
-  const res = await fetch(url, { method: 'POST', body: form });
+  const res = await fetch(url, { method: 'POST', body: form, signal });
   if (!res.ok) throw new Error(`El servidor respondió con el código ${res.status}`);
   return res.json();
 }
