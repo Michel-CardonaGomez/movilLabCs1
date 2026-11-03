@@ -6,6 +6,7 @@ Uso:
 """
 import argparse
 import json
+import sys
 import threading
 import time
 
@@ -28,7 +29,15 @@ def main():
     t_status, t_tele, t_frame = f"{base}/status", f"{base}/telemetry", f"{base}/camera/frame"
     t_capture, t_cmd_led, t_led = f"{base}/cmd/capture", f"{base}/cmd/led", f"{base}/led/state"
 
-    cap = cv2.VideoCapture(args.video if args.video else args.camera)
+    if args.video:
+        cap = cv2.VideoCapture(args.video)
+    else:
+        # En Windows el backend por defecto (MSMF) suele entregar frames negros: DirectShow es más fiable.
+        backend = cv2.CAP_DSHOW if sys.platform == "win32" else cv2.CAP_ANY
+        cap = cv2.VideoCapture(args.camera, backend)
+        for _ in range(15):  # la webcam necesita unos frames para ajustar la exposición
+            cap.read()
+            time.sleep(0.05)
     if not cap.isOpened():
         raise SystemExit("No se pudo abrir la fuente de video.")
 
@@ -64,7 +73,14 @@ def main():
             ok, frame = cap.read()
         return frame if ok else None
 
+    black_warned = False
+
     def encode(frame):
+        nonlocal black_warned
+        if frame.mean() < 5 and not black_warned:
+            black_warned = True
+            print("Aviso: los frames salen negros. Revisa que otra app no use la webcam, "
+                  "el permiso de cámara de Windows o prueba --camera 1 / --video archivo.mp4")
         frame = cv2.resize(frame, (320, 240))
         ok, buf = cv2.imencode(".jpg", frame, [cv2.IMWRITE_JPEG_QUALITY, args.quality])
         return buf.tobytes() if ok else None
